@@ -1,0 +1,57 @@
+name: EAML-PT Deploy to Google Cloud Run (TEE)
+
+# Este pipeline pode ser ativado manualmente no botão "Run workflow" 
+# ou automaticamente quando há um push na branch main.
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: europe-west4 # Região Europeia para conformidade RGPD
+  REPO_NAME: eaml-pt-repo
+  SERVICE_NAME: eaml-pt-gateway
+
+jobs:
+  deploy-to-confidential-cloud:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout do Repositório
+      uses: actions/checkout@v4
+
+    # 1. Autenticação na Google Cloud usando o Segredo do GitHub
+    - name: Autenticação no GCP
+      uses: google-github-actions/auth@v2
+      with:
+        credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+    # 2. Configurar o Google Cloud SDK
+    - name: Configurar SDK do GCP
+      uses: google-github-actions/setup-gcloud@v2
+
+    # 3. Preparar o Docker para enviar imagens para o Google Artifact Registry
+    - name: Configurar Autenticação Docker (Artifact Registry)
+      run: |
+        gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+    # 4. Construir e Enviar a Imagem Docker (O nosso Dockerfile em ação)
+    - name: Build e Push da Imagem Docker
+      run: |
+        IMAGE_PATH="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+        docker build -t $IMAGE_PATH .
+        docker push $IMAGE_PATH
+
+    # 5. Lançamento no Cloud Run com Confidential Computing (TEE) ativado!
+    - name: Deploy para o Cloud Run (Confidential Space)
+      run: |
+        IMAGE_PATH="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+        gcloud run deploy ${{ env.SERVICE_NAME }} \
+          --image $IMAGE_PATH \
+          --region ${{ env.REGION }} \
+          --execution-environment gen2 \
+          --platform managed \
+          --allow-unauthenticated \
+          --memory 512Mi \
+          --set-env-vars="ENVIRONMENT=DRY_RUN"
