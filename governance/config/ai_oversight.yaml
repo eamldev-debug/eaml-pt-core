@@ -1,0 +1,20 @@
+version: "1.0"
+compliance:
+  - "EU-AI-Act-Art-14"
+  - "GDPR-Art-25"
+  - "NIS2-Art-21"
+
+level2_escalation:
+  enabled: true
+  trigger_conditions:
+    - "Human verdict = ESCALATE_L2"
+  sla_hours: 4
+
+audit_trail:
+  kafka_topics:
+    oversight_queue: "eaml.human.oversight.queue"
+    audit_log: "eaml.audit.oversight"
+  retention_days: 2555
+  integrity:
+    signing_enabled: true
+    algorithm: "ML-DSA-65"
