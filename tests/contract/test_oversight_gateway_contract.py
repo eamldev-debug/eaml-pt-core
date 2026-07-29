@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/init/env python3
 """
 EAML-PT Contract Testing - Validação de Contrato do Gateway de Supervisão
 Garante que o payload e os hashes SHA-384 cumprem o padrão estipulado pela arquitetura.
@@ -32,7 +32,7 @@ class TestHumanOversightGatewayContract(unittest.TestCase):
         self.assertIn("status", response)
         self.assertIn("audit_ref", response)
         self.assertEqual(response["status"], "APPROVED")
-        self.assertEqual(len(response["audit_ref"]), 96) # O hash SHA-384 tem exatamente 96 caracteres hexadecimais
+        self.assertEqual(len(response["audit_ref"]), 96)
 
     def test_contract_structure_high_risk(self):
         """Valida a estrutura do contrato para um fluxo de alto risco (Escalada Condicional)."""
@@ -46,4 +46,3 @@ class TestHumanOversightGatewayContract(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-    
