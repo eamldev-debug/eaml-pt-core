@@ -1,0 +1,5 @@
+EAML-PT Core Dependencies
+​Mantido o mais minimalista possível para reduzir a superfície de ataque (Supply Chain Security)
+​fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
