@@ -1,0 +1,21 @@
+name: EAML-PT Resilience & Compliance Gate
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  policy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run EAML Policy Checker
+        run: |
+          python policy_checker.py
