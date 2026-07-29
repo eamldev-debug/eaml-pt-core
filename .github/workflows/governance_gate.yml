@@ -35,6 +35,12 @@ jobs:
     - name: Executar Testes de Integração End-to-End (SLA < 100ms)
       run: |
         python tests/integration/test_system_flow.py
+        
+
+    - name: Executar Testes do Orquestrador de Confiança (Fail-Closed & Zeroization)
+      run: |
+        python tests/integration/test_trust_orchestrator.py
+
 
     - name: Simulação de Red Teaming HNDL (PQC Resilience)
       run: |
