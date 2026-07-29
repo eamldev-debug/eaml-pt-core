@@ -1,4 +1,4 @@
-#!/usr/init/env python3
+#!/usr/bin/env python3
 """
 EAML-PT Contract Testing - Validação de Contrato do Gateway de Supervisão
 Garante que o payload e os hashes SHA-384 cumprem o padrão estipulado pela arquitetura.
